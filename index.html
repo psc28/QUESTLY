@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Questly 🌿</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=VT323&family=Lexend+Soft:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+    		font-family: 'Lexend Soft', sans-serif;
+    		background-image: url('backgroundquestly.JPG');
+    		background-size: cover;
+    		background-position: center;
+    		background-attachment: fixed;
+    		image-rendering: pixelated; /* Keeps your pixel art sharp! */
+	}
+        .pixel-font { font-family: 'VT323', monospace; }
+        .neobrutalism {
+            border: 3px solid #000;
+            box-shadow: 5px 5px 0px #000;
+            transition: all 0.1s ease;
+        }
+        .neobrutalism:active {
+            transform: translate(2px, 2px);
+            box-shadow: 2px 2px 0px #000;
+        }
+        .floating {
+            animation: floating 3s ease-in-out infinite;
+        }
+        @keyframes floating {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+            100% { transform: translateY(0px); }
+        }
+    </style>
+</head>
+<body class="min-h-screen p-4 md:p-8">
+
+    <div class="max-w-2xl mx-auto">
+        <header class="text-center mb-10 floating">
+            <h1 class="text-5xl md:text-6xl font-bold mb-2 pixel-font text-indigo-600">QUESTLY</h1>
+            <p class="text-gray-600">Pick a time, get a task, get it done! ⚡</p>
+        </header>
+
+        <section class="bg-white neobrutalism p-6 mb-8 rounded-lg">
+            <h2 class="text-xl font-bold mb-4 flex items-center">
+                <span class="mr-2">✍️</span> Add New Task
+            </h2>
+            <div class="flex flex-col md:flex-row gap-3">
+                <input id="taskInput" type="text" placeholder="What needs to be done?" 
+                    class="flex-1 border-2 border-black p-3 rounded focus:outline-none focus:ring-2 focus:ring-indigo-400">
+                <select id="timeSelect" class="border-2 border-black p-3 rounded font-bold bg-yellow-300">
+                    <option value="5">5 Min</option>
+                    <option value="10">10 Min</option>
+                    <option value="15">15 Min</option>
+                    <option value="20">20 Min</option>
+                </select>
+                <button onclick="addTask()" class="bg-green-400 p-3 rounded font-bold neobrutalism px-6">ADD</button>
+            </div>
+        </section>
+
+        <section class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8 text-center">
+            <button onclick="spinRoulette(5)" class="bg-blue-300 p-4 rounded-lg neobrutalism group">
+                <div class="text-2xl mb-1">💧</div>
+                <div class="font-bold">5 MIN</div>
+                <div id="count-5" class="text-xs font-mono opacity-60">0 tasks</div>
+            </button>
+            <button onclick="spinRoulette(10)" class="bg-emerald-300 p-4 rounded-lg neobrutalism">
+                <div class="text-2xl mb-1">🌿</div>
+                <div class="font-bold">10 MIN</div>
+                <div id="count-10" class="text-xs font-mono opacity-60">0 tasks</div>
+            </button>
+            <button onclick="spinRoulette(15)" class="bg-orange-300 p-4 rounded-lg neobrutalism">
+                <div class="text-2xl mb-1">🔥</div>
+                <div class="font-bold">15 MIN</div>
+                <div id="count-15" class="text-xs font-mono opacity-60">0 tasks</div>
+            </button>
+            <button onclick="spinRoulette(20)" class="bg-purple-300 p-4 rounded-lg neobrutalism">
+                <div class="text-2xl mb-1">👾</div>
+                <div class="font-bold">20 MIN</div>
+                <div id="count-20" class="text-xs font-mono opacity-60">0 tasks</div>
+            </button>
+        </section>
+
+        <div id="resultCard" class="hidden bg-white neobrutalism p-10 rounded-xl text-center border-dashed border-4 border-indigo-500">
+            <p class="text-indigo-500 font-bold uppercase tracking-widest mb-2 pixel-font text-2xl">Your Task Is:</p>
+            <h3 id="displayTask" class="text-3xl font-bold text-black mb-6 italic"></h3>
+            <button onclick="closeResult()" class="text-sm font-bold underline hover:text-indigo-600">Got it, remove it!</button>
+        </div>
+    </div>
+
+    <script>
+        // Data structure
+        let taskList = {
+            5: [],
+            10: [],
+            15: [],
+            20: []
+        };
+
+        function addTask() {
+            const input = document.getElementById('taskInput');
+            const time = document.getElementById('timeSelect').value;
+            
+            if (input.value.trim() === "") {
+                alert("Please enter a task!");
+                return;
+            }
+
+            // Add to data
+            taskList[time].push(input.value);
+            
+            // Clear input and update UI
+            input.value = "";
+            updateCounts();
+        }
+
+        function updateCounts() {
+            [5, 10, 15, 20].forEach(t => {
+                document.getElementById(`count-${t}`).innerText = `${taskList[t].length} tasks`;
+            });
+        }
+
+        function spinRoulette(time) {
+            const resultCard = document.getElementById('resultCard');
+            const displayTask = document.getElementById('displayTask');
+            
+            if (taskList[time].length === 0) {
+                alert(`No ${time}-minute tasks in your list yet!`);
+                return;
+            }
+
+            // Select random index
+            const randomIndex = Math.floor(Math.random() * taskList[time].length);
+            const selectedTask = taskList[time].splice(randomIndex, 1)[0];
+
+            // Show result
+            displayTask.innerText = selectedTask;
+            resultCard.classList.remove('hidden');
+            
+            updateCounts();
+        }
+
+        function closeResult() {
+            document.getElementById('resultCard').classList.add('hidden');
+        }
+    </script>
+</body>
+</html>
